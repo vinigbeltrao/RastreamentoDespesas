@@ -1,99 +1,146 @@
 import os
 
 BANCO_DE_DADOS = "planilha.csv"
-
 def limparTela():
     os.system('cls')
+
+limparTela()
+
+input("\033[1;34;40mBem Vinda, \033[37mNatália\033[1;34;40m!\nDigite alguma tecla para acessar o seu sistema de catálogo de despesas pessoais. ")
+
 
 def extrairPlanilha():
 
     transacoes = []
-    with open(BANCO_DE_DADOS, 'r') as arquivo:
-        linhas = arquivo.read().split('\n')
+    with open(BANCO_DE_DADOS, "r") as planilha:
+        linhas = planilha.read().split("\n")
 
         for linha in linhas:
             if linha:
                 partes = linha.split(',')
-                transacoes.append({'nome': partes[0],'categoria': partes[1],'valor': float(partes[2])})
+                transacoes.append({"nome": partes[0],"categoria": partes[1],"valor": float(partes[2])})
     return transacoes
 
 def salvarTransacao(transacoes):
-    with open(BANCO_DE_DADOS, 'w') as arquivo:
+    with open(BANCO_DE_DADOS, "w") as planilha:
         for transacao in transacoes:
             linha = f"{transacao['nome']},{transacao['categoria']},{transacao['valor']}"
-            arquivo.write(linha + '\n')
+            planilha.write(linha + '\n')
 
 def verTransacoes(transacoes):
-    for i, transacao in enumerate(transacoes):
-        print(f"{i}. Nome: {transacao['nome']}, Categoria: {transacao['categoria']}, Valor: {transacao['valor']}")
+    if len(transacoes) == 0:
+        input("No momento não existem transações, escolha a primeira opção no menu principal para adicionar uma.\nDigite algo para voltar ao menu principal.")
+        menuPrincipal()
+    else:
+        for i, transacao in enumerate(transacoes):
+            print(f"{i}. Nome: {transacao['nome']}, Categoria: {transacao['categoria']}, Valor: {transacao['valor']}")
 
 def adicionarTransacao():
-    nome = input('Digite o nome da transação: ')
-    categoria = input('Digite a categoria da transação: ')
-    valor = float(input('Digite o valor da transação: '))
+    nome = input("Digite o nome da transação: ").lower()
+    categoria = input("Digite a categoria da transação: ").lower()
+    valor = float(input("Digite o valor da transação: "))
 
     transacoes = extrairPlanilha()
-    transacoes.append({'nome': nome,'categoria': categoria,'valor': valor})
+    transacoes.append({"nome": nome,"categoria": categoria,"valor": valor})
 
     salvarTransacao(transacoes)
 
 
 def deletarTransacao():
+    try:
+        transacoes = extrairPlanilha()
+
+        if len(transacoes) == 0:
+            input("No momento não existem transações a serem apagadas.\nDigite algo para voltar ao menu principal. ")
+        else:
+            verTransacoes(transacoes)
+
+            indice_transacao = int(input('Digite o índice da transação a ser apagada: '))
+            transacoes.pop(indice_transacao)
+
+            salvarTransacao(transacoes)
+    except IndexError:
+        input("Índice inexistente. Pressione outra tecla para voltar ao menu. ")
+        menuPrincipal()
+
+def totalGasto():
+    totalGasto = 0
     transacoes = extrairPlanilha()
-    verTransacoes(transacoes)
+    for i in transacoes:
+        totalGasto += i["valor"]
+    return totalGasto
 
-    indice_transacao = int(input('Informe o índice da transação a ser deletada: '))
-    transacoes.pop(indice_transacao)
-
-    salvarTransacao(transacoes)
-
-def verTransacoesPorCategorias():
-    categoria = input('Informe a categoria para filtrar: ')
+def verTransacoesPorCategorias(escolha):
+    categoria = input("Informe a categoria para filtrar: ").lower()
     transacoes = extrairPlanilha()
 
-    transacoes_filtradas = [t for t in transacoes if t['categoria'] == categoria]
-    verTransacoes(transacoes_filtradas)
+    transacoesFiltradas = [t for t in transacoes if t["categoria"] == categoria]
+    if len(transacoesFiltradas) == 0:
+        input("Não existem transações com essa categoria.\nDigite algo para voltar ao menu principal.")
+        menuPrincipal()
 
+    elif escolha == "5":
+        totalCategoria = 0
+        total = totalGasto()
+        for i in transacoesFiltradas:
+            totalCategoria += i["valor"]
+        porcentagemCategoria = (totalCategoria * 100) / total
+        return porcentagemCategoria, categoria
+
+    else:
+        verTransacoes(transacoesFiltradas)
+    
 
 def menuPrincipal():
     try:
         while True:
             limparTela()
-            print("-" * 12 + "MENU PRINCIPAL" + "-" * 12)
-            print("|" + " "*36 + "|")
-            print("| {0:34} |".format("1. Adicionar uma nova transação"))
-            print("| {0:34} |".format("2. Ver transações por categoria"))
-            print("| {0:34} |".format("3. Deletar uma transação"))
-            print("| {0:34} |".format("4. Ver todas as transações"))
-            print("| {0:34} |".format("5. Fechar menu"))
-            print("|" + " "*36 + "|")
-            print("-" * 38 + "\n")
+            print("\033[1;34;40m-" * 16 + "MENU PRINCIPAL" + "-" * 16)
+            print("|" + " " * 44 + "|")
+            print("| {0:42} |".format("1. Adicionar uma nova transação"))
+            print("| {0:42} |".format("2. Ver transações por categoria"))
+            print("| {0:42} |".format("3. Deletar uma transação"))
+            print("| {0:42} |".format("4. Ver todas as transações"))
+            print("| {0:42} |".format("5. Ver relação em porcentagem de gastos"))
+            print("| {0:42} |".format("6. Fechar menu"))
+            print("|" + " "*44 + "|")
+            print("| {0:^42} |".format(f"Gasto total: R${totalGasto()}"))
+            print("|" + " "*44 + "|")
+            print("-" * 46 + "\n")
             escolha = input("Escolha um opção: ")
 
             if escolha == "1":
                 adicionarTransacao()
             elif escolha == "2":
                 verTransacoesPorCategorias()
-                input("Digite qualquer tecla para voltar para o menu principal...")
+                input("Digite qualquer tecla para voltar para o menu principal. ")
             elif escolha == "3":
                 deletarTransacao()
             elif escolha == "4":
                 transacoes = extrairPlanilha()
                 verTransacoes(transacoes)
-                input("Digite qualquer tecla para voltar para o menu principal...")
+                input("Digite qualquer tecla para voltar para o menu principal. ")
             elif escolha == "5":
+                porcentagemCategoria, categoria = verTransacoesPorCategorias(escolha)
+                print(f"Você gastou {porcentagemCategoria:.2f}% dos seus gastos com {categoria}. Se oriente!") 
+                input("Digite qualquer tecla para voltar para o menu principal. ")
+            elif escolha == "6":
                 break
     except EOFError:
         print("Opção inválida. Tente novamente.")
+        input("Digite qualquer tecla para voltar para o menu principal. ")
         menuPrincipal()
-        input("Digite qualquer tecla para voltar para o menu principal...")
     except KeyboardInterrupt:
         print("Opção inválida. Tente novamente.")
+        input("Digite qualquer tecla para voltar para o menu principal. ")
         menuPrincipal()
-        input("Digite qualquer tecla para voltar para o menu principal...")
+
     except FileNotFoundError:
-        print("Adicione transações na planilha antes de poder ver.")
+        with open(BANCO_DE_DADOS, "w") as planilha:
+            pass
+
+        input("Uma pasta com repósitorios econômicos foi criada. Por favor digite alguma tecla para voltar ao menu principal a fim de realizar as funções.")
         menuPrincipal()
-        input("Digite qualquer tecla para voltar para o menu principal...")
+
 
 menuPrincipal()

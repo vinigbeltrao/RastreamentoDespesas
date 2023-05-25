@@ -36,11 +36,12 @@ def verTransacoes(transacoes):
             print(f"{i}. Nome: {transacao['nome']}, Categoria: {transacao['categoria']}, Valor: {transacao['valor']}")
 
 def adicionarTransacao():
+    transacoes = extrairPlanilha()
+
     nome = input("Digite o nome da transação: ").lower()
     categoria = input("Digite a categoria da transação: ").lower()
     valor = float(input("Digite o valor da transação: "))
 
-    transacoes = extrairPlanilha()
     transacoes.append({"nome": nome,"categoria": categoria,"valor": valor})
 
     salvarTransacao(transacoes)

@@ -64,7 +64,7 @@ def deletarTransacao():
         input("Índice inexistente. Pressione outra tecla para voltar ao menu. ")
         menuPrincipal()
     except ValueError:
-        input("Voltando ao menu principal.\nDigite algo para voltar ao menu principal.")
+        input("Caractér inválido.\nDigite algo para voltar ao menu principal.")
         menuPrincipal()
 
 def totalGasto():

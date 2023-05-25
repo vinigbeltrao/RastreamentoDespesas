@@ -32,8 +32,8 @@ def verTransacoes(transacoes):
         input("No momento não existem transações, escolha a primeira opção no menu principal para adicionar uma.\nDigite algo para voltar ao menu principal.")
         menuPrincipal()
     else:
-        for i, transacao in enumerate(transacoes):
-            print(f"{i}. Nome: {transacao['nome']}, Categoria: {transacao['categoria']}, Valor: {transacao['valor']}")
+        for indice, transacao in enumerate(transacoes):
+            print(f"{indice}. Nome: {transacao['nome']}, Categoria: {transacao['categoria']}, Valor: {transacao['valor']}")
 
 def adicionarTransacao():
     transacoes = extrairPlanilha()
@@ -56,8 +56,8 @@ def deletarTransacao():
         else:
             verTransacoes(transacoes)
 
-            indice_transacao = int(input('Digite o índice da transação a ser apagada: '))
-            transacoes.pop(indice_transacao)
+            indiceTransacao = int(input('Digite o índice da transação a ser apagada: '))
+            transacoes.pop(indiceTransacao)
 
             salvarTransacao(transacoes)
     except IndexError:
@@ -78,7 +78,7 @@ def verTransacoesPorCategorias(escolha):
     categoria = input("Informe a categoria para filtrar: ").lower()
     transacoes = extrairPlanilha()
 
-    transacoesFiltradas = [t for t in transacoes if t["categoria"] == categoria]
+    transacoesFiltradas = [transacao for transacao in transacoes if transacao["categoria"] == categoria]
     if len(transacoesFiltradas) == 0:
         input("Não existem transações com essa categoria.\nDigite algo para voltar ao menu principal.")
         menuPrincipal()

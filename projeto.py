@@ -63,12 +63,15 @@ def deletarTransacao():
     except IndexError:
         input("Índice inexistente. Pressione outra tecla para voltar ao menu. ")
         menuPrincipal()
+    except ValueError:
+        input("Voltando ao menu principal.\nDigite algo para voltar ao menu principal.")
+        menuPrincipal()
 
 def totalGasto():
     totalGasto = 0
     transacoes = extrairPlanilha()
-    for i in transacoes:
-        totalGasto += i["valor"]
+    for transacao in transacoes:
+        totalGasto += transacao["valor"]
     return totalGasto
 
 def verTransacoesPorCategorias(escolha):
@@ -83,8 +86,8 @@ def verTransacoesPorCategorias(escolha):
     elif escolha == "5":
         totalCategoria = 0
         total = totalGasto()
-        for i in transacoesFiltradas:
-            totalCategoria += i["valor"]
+        for transacao in transacoesFiltradas:
+            totalCategoria += transacao["valor"]
         porcentagemCategoria = (totalCategoria * 100) / total
         return porcentagemCategoria, categoria
 
@@ -105,7 +108,7 @@ def menuPrincipal():
             print("| {0:42} |".format("5. Ver relação em porcentagem de gastos"))
             print("| {0:42} |".format("6. Fechar menu"))
             print("|" + " "*44 + "|")
-            print("| {0:^42} |".format(f"Gasto total: R${totalGasto()}"))
+            print("| {0:^42} |".format(f"Gasto total: R${totalGasto():.2f}"))
             print("|" + " "*44 + "|")
             print("-" * 46 + "\n")
             escolha = input("Escolha um opção: ")
@@ -113,7 +116,7 @@ def menuPrincipal():
             if escolha == "1":
                 adicionarTransacao()
             elif escolha == "2":
-                verTransacoesPorCategorias()
+                verTransacoesPorCategorias(escolha)
                 input("Digite qualquer tecla para voltar para o menu principal. ")
             elif escolha == "3":
                 deletarTransacao()
